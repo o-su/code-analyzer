@@ -1,0 +1,51 @@
+{
+    "name": "code-analyzer",
+    "version": "1.0.0",
+    "description": "Static code analyzer implemented using TypeScript compiler.",
+    "author": "o-su",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/o-su/code-analyzer.git"
+    },
+    "bugs": {
+        "url": "https://github.com/o-su/code-analyzer/issues"
+    },
+    "homepage": "https://github.com/o-su/code-analyzer",
+    "keywords": [
+        "static code analysis",
+        "code analysis",
+        "ast",
+        "typescript",
+        "javascript",
+        "jsx",
+        "tsx",
+        "code analyzer"
+    ],
+    "files": [
+        "dist"
+    ],
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "test": "jest --config jestconfig.json"
+    },
+    "dependencies": {
+        "typescript": "*",
+        "file-tree-walker-ts": "*"
+    },
+    "devDependencies": {
+        "@types/node": "*",
+        "@types/jest": "*",
+        "jest": "*",
+        "ts-jest": "*",
+        "prettier": "*"
+    },
+    "prettier": {
+        "useTabs": false,
+        "tabWidth": 4,
+        "printWidth": 100,
+        "singleQuote": false
+    }
+}
