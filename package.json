@@ -1,5 +1,5 @@
 {
-    "name": "code-analyzer",
+    "name": "code-analyzer-ts",
     "version": "1.0.0",
     "description": "Static code analyzer implemented using TypeScript compiler.",
     "author": "o-su",
