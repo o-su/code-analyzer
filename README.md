@@ -12,7 +12,7 @@ npm install --save code-analyzer-ts
 
 ```typescript
 import * as ts from "typescript";
-import { FileTreeWalker } from "code-analyzer-ts";
+import { CodeAnalyzer } from "code-analyzer-ts";
 
 new CodeAnalyzer()
     .onFileStart((filePath: string, filename: string, fileExtension: string, content: string) => {
