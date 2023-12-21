@@ -1,6 +1,6 @@
 {
     "name": "code-analyzer-ts",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Static code analyzer implemented using TypeScript compiler.",
     "author": "o-su",
     "license": "MIT",

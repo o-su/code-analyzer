@@ -7,7 +7,7 @@ describe("when root directory contains one file", () => {
     test("then CodeAnalyzer finds this file and returns data", () => {
         // given
         mockFsReaddir(() => ["file.ts"]);
-        mockFsStat(() => ({ isDirectory: () => false, isFile: () => true }));
+        mockFsStat(() => ({ isDirectory: () => false, isFile: () => true }) as fs.Stats);
         mockFsReadFile(() => "content");
         const codeAnalyzer: CodeAnalyzer = new CodeAnalyzer();
 
@@ -19,7 +19,7 @@ describe("when root directory contains one file", () => {
                     expect(filename).toBe("file");
                     expect(fileExtension).toBe(".ts");
                     expect(content).toBe("content");
-                }
+                },
             )
             .onFileEnd(
                 (filePath: string, filename: string, fileExtension: string, content: string) => {
@@ -27,7 +27,7 @@ describe("when root directory contains one file", () => {
                     expect(filename).toBe("file");
                     expect(fileExtension).toBe(".ts");
                     expect(content).toBe("content");
-                }
+                },
             )
             .analyze("path");
     });
@@ -37,7 +37,7 @@ describe("when root directory contains TypeScript source file", () => {
     test("then CodeAnalyzer parses file correctly", () => {
         // given
         mockFsReaddir(() => ["file.ts"]);
-        mockFsStat(() => ({ isDirectory: () => false, isFile: () => true }));
+        mockFsStat(() => ({ isDirectory: () => false, isFile: () => true }) as fs.Stats);
         mockFsReadFile(() => "const test: number = 5;");
         const codeAnalyzer: CodeAnalyzer = new CodeAnalyzer();
 
@@ -54,7 +54,7 @@ describe("when root directory contains TypeScript source file", () => {
                         if (ts.isVariableDeclaration(variableDeclaration)) {
                             expect(variableDeclaration.name.getText()).toBe("test");
                             expect(variableDeclaration.type!.kind).toBe(
-                                ts.SyntaxKind.NumberKeyword
+                                ts.SyntaxKind.NumberKeyword,
                             );
                             expect(variableDeclaration.initializer!.getText()).toBe("5");
                         }
@@ -72,7 +72,7 @@ describe("when root directory contains JavaScript source file", () => {
     test("then CodeAnalyzer parses file correctly", () => {
         // given
         mockFsReaddir(() => ["file.js"]);
-        mockFsStat(() => ({ isDirectory: () => false, isFile: () => true }));
+        mockFsStat(() => ({ isDirectory: () => false, isFile: () => true }) as fs.Stats);
         mockFsReadFile(() => "const test = 5;");
         const codeAnalyzer: CodeAnalyzer = new CodeAnalyzer();
 
@@ -102,18 +102,16 @@ describe("when root directory contains JavaScript source file", () => {
     });
 });
 
-function mockFsReaddir(getReturnValue: (directoryPath: string) => string[]) {
-    spyOn(fs, "readdir").and.callFake((directoryPath, callback) => {
-        callback(undefined, getReturnValue(directoryPath));
-    });
+function mockFsReaddir(getReturnValue: (directoryPath: fs.PathLike) => string[]): void {
+    jest.spyOn(fs.promises, "readdir").mockImplementation((directoryPath) =>
+        Promise.resolve(getReturnValue(directoryPath) as any),
+    );
 }
-function mockFsStat(getReturnValue: () => object) {
-    spyOn(fs, "stat").and.callFake((_directoryPath, callback) => {
-        callback(undefined, getReturnValue());
-    });
+
+function mockFsStat(getReturnValue: () => fs.Stats): void {
+    jest.spyOn(fs.promises, "stat").mockImplementation(() => Promise.resolve(getReturnValue()));
 }
+
 function mockFsReadFile(getReturnValue: () => string) {
-    spyOn(fs, "readFile").and.callFake((_directoryPath, _encoding, callback) => {
-        callback(undefined, getReturnValue());
-    });
+    jest.spyOn(fs.promises, "readFile").mockImplementation(() => Promise.resolve(getReturnValue()));
 }

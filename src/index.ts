@@ -56,11 +56,14 @@ export class CodeAnalyzer {
             .onFile(
                 (filePath: string, filename: string, fileExtension: string, content: string) => {
                     this.onFileStartHandler?.(filePath, filename, fileExtension, content);
-                    this.analyzeSourceFile(filename, content, (node: ts.Node) =>
-                        this.onNodeHandler?.(node, filePath, filename, fileExtension)
+                    this.analyzeSourceFile(
+                        filename,
+                        content,
+                        (node: ts.Node) =>
+                            this.onNodeHandler?.(node, filePath, filename, fileExtension),
                     );
                     this.onFileEndHandler?.(filePath, filename, fileExtension, content);
-                }
+                },
             )
             .walk(sourceDirectory);
     };
@@ -68,42 +71,41 @@ export class CodeAnalyzer {
     private analyzeSourceFile = (
         fileName: string,
         sourceCode: string,
-        transformNode: (node: ts.Node) => void
+        transformNode: (node: ts.Node) => void,
     ): void => {
-        const ast: ts.SourceFile = this.transformSourceCodeToAst(fileName, sourceCode);
+        const ast: ts.Node = this.transformSourceCodeToAst(fileName, sourceCode);
 
         ts.transform(
             ast,
             [(context: ts.TransformationContext) => this.createTransformer(context, transformNode)],
             {
                 removeComments: false,
-            }
+            },
         );
     };
 
-    private transformSourceCodeToAst = (fileName: string, sourceCode: string): ts.SourceFile => {
-        return ts.createSourceFile(fileName, sourceCode, ts.ScriptTarget.Latest, true);
-    };
+    private transformSourceCodeToAst = (fileName: string, sourceCode: string): ts.SourceFile =>
+        ts.createSourceFile(fileName, sourceCode, ts.ScriptTarget.Latest, true);
 
-    private createTransformer = <T extends ts.Node>(
-        context: ts.TransformationContext,
-        onNode: (node: ts.Node) => void
-    ) => (rootNode: T) => {
-        return ts.visitNode(rootNode, (childNode: ts.Node) =>
-            this.visitNode(childNode, context, onNode)
-        );
-    };
+    private createTransformer =
+        <T extends ts.Node>(context: ts.TransformationContext, onNode: (node: ts.Node) => void) =>
+        (rootNode: T) => {
+            return ts.visitNode(rootNode, (childNode: ts.Node) =>
+                this.visitNode(childNode, context, onNode),
+            );
+        };
 
     private visitNode = (
         node: ts.Node,
         context: ts.TransformationContext,
-        onNode: (node: ts.Node) => void
+        onNode: (node: ts.Node) => void,
     ): ts.Node => {
         onNode(node);
+
         return ts.visitEachChild(
             node,
             (childNode: ts.Node) => this.visitNode(childNode, context, onNode),
-            context
+            context,
         );
     };
 }
